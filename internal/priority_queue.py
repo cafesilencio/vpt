@@ -9,8 +9,13 @@ class PriorityQueue:
 
     def add(self, item):
         self.items.append(item)
-        # todo reverse=true???
         self.items.sort(key=functools.cmp_to_key(self.comparator), reverse=True)
 
     def poll(self):
         return None if len(self.items) == 0 else self.items.pop(0)
+
+    def peek(self):
+        return None if len(self.items) == 0 else self.items[0]
+
+    def size(self):
+        return len(self.items)
