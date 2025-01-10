@@ -1,13 +1,5 @@
 import random
-from haversine import haversine, Unit
-import support as vpt_support
-
-
-def distance_calc_fun(location_point1, location_point2):
-    p1 = (location_point1.get_latitude(), location_point1.get_longitude())
-    p2 = (location_point2.get_latitude(), location_point2.get_longitude())
-    return haversine(p1, p2, unit=Unit.METERS)
-
+from internal import support as vpt_support
 
 class LocationTreeNode:
 

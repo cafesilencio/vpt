@@ -1,6 +1,6 @@
 import unittest
 import location_tree_node as ltn
-import support
+from internal import support
 from location_point import SearchablePoint
 
 class LocationTreeNodeTests(unittest.TestCase):
