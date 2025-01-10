@@ -13,10 +13,4 @@ class PriorityQueue:
         self.items.sort(key=functools.cmp_to_key(self.comparator), reverse=True)
 
     def poll(self):
-        if len(self.items) == 0:
-            return None
-        else:
-            item_to_return = self.items[0]
-            self.items.remove(item_to_return)
-            return item_to_return
-
+        return None if len(self.items) == 0 else self.items.pop(0)
