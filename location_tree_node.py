@@ -1,4 +1,6 @@
 import random
+import sys
+
 from internal import support as vpt_support
 
 class LocationTreeNode:
@@ -13,21 +15,22 @@ class LocationTreeNode:
         self.threshold = 0.0
         self.closer = None
         self.farther = None
-        self._protected_initialize_node()
+        self.vantage_point = None
+        self.protected_initialize_node()
 
-    def _protected_initialize_node(self):
+    def protected_initialize_node(self):
         if len(self.points) == 0:
             if self.closer.size() == 0 or self.farther.size() == 0:
                 # Prune empty child nodes.
                 self.add_all_points_to_collection(self.points)
                 self.closer = None
                 self.farther = None
-                self._protected_initialize_node()
+                self.protected_initialize_node()
             else:
                 if self.closer is not None:
-                    self.closer._protected_initialize_node()
+                    self.closer.protected_initialize_node()
                 if self.farther is not None:
-                    self.farther._protected_initialize_node()
+                    self.farther.protected_initialize_node()
         else:
             # What matters is that the points within the distance threshold of the
             # vantage point are on the left of the vantage point index in the list
@@ -83,3 +86,24 @@ class LocationTreeNode:
                 node.remove_point(searchable_point)
         else:
             self.points.remove(searchable_point)
+
+    def collect_nearest_neighbors(self, collector):
+        if len(self.points) == 0:
+            first_node_searched = self.get_child_node_for_point(collector.query_point)
+            if first_node_searched is not None:
+                first_node_searched.collect_nearest_neighbors(collector)
+
+            distance_from_vantage_to_query_point = self.distanceCalcFunction(self.vantage_point, collector.query_point)
+            distance_from_query_to_farthest_point = self.distanceCalcFunction(collector.query_point, collector.get_farthest_point())  if collector.get_farthest_point() is not None else sys.float_info.max
+
+            if first_node_searched == self.closer:
+                distance_from_query_point_to_threshold = self.threshold - distance_from_vantage_to_query_point
+                if distance_from_query_to_farthest_point > distance_from_query_point_to_threshold and self.farther is not None:
+                    self.farther.collect_nearest_neighbors(collector)
+            else:
+                distance_from_query_point_to_threshold = distance_from_vantage_to_query_point - self.threshold
+                if distance_from_query_point_to_threshold <= distance_from_query_to_farthest_point and self.closer is not None:
+                    self.closer.collect_nearest_neighbors(collector)
+        else:
+            for point in self.points:
+                collector.offer_point(point)

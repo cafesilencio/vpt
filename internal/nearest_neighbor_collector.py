@@ -1,4 +1,3 @@
-import functools
 import sys
 from internal.priority_queue import PriorityQueue
 from internal import support as vpt_support
