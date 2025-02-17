@@ -5,7 +5,6 @@ from location_search_tree import LocationSearchTree
 
 class MyTestCase(unittest.TestCase):
 
-# fixme this test is flakey because there is a bug in the implementation!
     def test_location_tree_collect_nearest_neighbors(self):
         p0 = lp.SearchablePoint(48.4063228, -122.6915171)
         p1 = lp.SearchablePoint(47.6319725, -122.3487409)

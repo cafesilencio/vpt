@@ -24,7 +24,7 @@ class NearestNeighborCollector:
                     self.queue.poll()
                     self.queue.add(location_point)
                     point_added = True
-
+        #fixme if a point was added won't the queue size always be greater than 0?
         if point_added and self.queue.size() > 0:
             queue_head = self.queue.peek()
             if queue_head is not None:

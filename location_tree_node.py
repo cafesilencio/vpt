@@ -8,7 +8,7 @@ class LocationTreeNode:
     # points is a collection of SearchablePoint
     # distance_calc_function is a function that takes two SearchablePoint(s) and returns the distance between them
     # capacity is the maximum number of nodes to store in this node
-    def __init__(self, points, distance_calc_function, capacity = 32):
+    def  __init__(self, points, distance_calc_function, capacity = 32):
         self.points = points
         self.distanceCalcFunction = distance_calc_function
         self.capacity = capacity
@@ -18,6 +18,7 @@ class LocationTreeNode:
         self.vantage_point = None
         self.protected_initialize_node()
 
+    # fixme rename this
     def protected_initialize_node(self):
         if len(self.points) == 0:
             if self.closer.size() == 0 or self.farther.size() == 0:
@@ -88,22 +89,21 @@ class LocationTreeNode:
             self.points.remove(searchable_point)
 
     def collect_nearest_neighbors(self, collector):
-        if len(self.points) == 0:
-            first_node_searched = self.get_child_node_for_point(collector.query_point)
-            if first_node_searched is not None:
-                first_node_searched.collect_nearest_neighbors(collector)
+        for point in self.points:
+            collector.offer_point(point)
 
-            distance_from_vantage_to_query_point = self.distanceCalcFunction(self.vantage_point, collector.query_point)
-            distance_from_query_to_farthest_point = self.distanceCalcFunction(collector.query_point, collector.get_farthest_point())  if collector.get_farthest_point() is not None else sys.float_info.max
+        first_node_searched = self.get_child_node_for_point(collector.query_point)
+        if first_node_searched is not None:
+            first_node_searched.collect_nearest_neighbors(collector)
 
-            if first_node_searched == self.closer:
-                distance_from_query_point_to_threshold = self.threshold - distance_from_vantage_to_query_point
-                if distance_from_query_to_farthest_point > distance_from_query_point_to_threshold and self.farther is not None:
-                    self.farther.collect_nearest_neighbors(collector)
-            else:
-                distance_from_query_point_to_threshold = distance_from_vantage_to_query_point - self.threshold
-                if distance_from_query_point_to_threshold <= distance_from_query_to_farthest_point and self.closer is not None:
-                    self.closer.collect_nearest_neighbors(collector)
+        distance_from_vantage_to_query_point = self.distanceCalcFunction(self.vantage_point, collector.query_point)
+        distance_from_query_to_farthest_point = self.distanceCalcFunction(collector.query_point, collector.get_farthest_point())  if collector.get_farthest_point() is not None else sys.float_info.max
+
+        if first_node_searched == self.closer:
+            distance_from_query_point_to_threshold = self.threshold - distance_from_vantage_to_query_point
+            if distance_from_query_to_farthest_point > distance_from_query_point_to_threshold and self.farther is not None:
+                self.farther.collect_nearest_neighbors(collector)
         else:
-            for point in self.points:
-                collector.offer_point(point)
+            distance_from_query_point_to_threshold = distance_from_vantage_to_query_point - self.threshold
+            if distance_from_query_point_to_threshold <= distance_from_query_to_farthest_point and self.closer is not None:
+                self.closer.collect_nearest_neighbors(collector)
