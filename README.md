@@ -1,3 +1,3 @@
 W.I.P.
 
-A vantage point tree implemented in Python.
+Implementation of a vantage point tree.
